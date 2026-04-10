@@ -1,0 +1,93 @@
+{
+  "entities": {
+    "Job": {
+      "title": "Job Posting",
+      "description": "A job opening created by an admin.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "category": { "type": "string", "enum": ["Worker", "Staff", "Management", "Supervisor"] },
+        "vacancy": { "type": "number" },
+        "deadline": { "type": "string", "format": "date" }
+      },
+      "required": ["title", "category", "vacancy", "deadline"]
+    },
+    "Machine": {
+      "title": "Machine",
+      "description": "A machine used in the factory.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "category": { "type": "string" }
+      },
+      "required": ["name", "category"]
+    },
+    "Skill": {
+      "title": "Skill / Process",
+      "description": "A skill or process performed by a worker.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "machineId": { "type": "string" }
+      },
+      "required": ["name", "category"]
+    },
+    "Factory": {
+      "title": "Factory",
+      "description": "A factory within the group.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "Application": {
+      "title": "Job Application",
+      "description": "An application submitted by a candidate.",
+      "type": "object",
+      "properties": {
+        "applicationId": { "type": "string" },
+        "name": { "type": "string" },
+        "dob": { "type": "string", "format": "date" },
+        "mobile": { "type": "string" },
+        "positionId": { "type": "string" },
+        "positionName": { "type": "string" },
+        "experience": { "type": "string" },
+        "machines": { "type": "array", "items": { "type": "string" } },
+        "skills": { "type": "array", "items": { "type": "string" } },
+        "currentlyEmployed": { "type": "boolean" },
+        "companyName": { "type": "string" },
+        "workedInGroup": { "type": "boolean" },
+        "factoryName": { "type": "string" },
+        "resignDate": { "type": "string", "format": "date" },
+        "resignReason": { "type": "string" },
+        "status": { "type": "string", "enum": ["Applied", "Shortlisted", "Interview Called", "Attended", "Selected", "Rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["applicationId", "name", "dob", "mobile", "positionId", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/jobs/{jobId}": {
+      "schema": "Job",
+      "description": "Collection of job postings."
+    },
+    "/applications/{appId}": {
+      "schema": "Application",
+      "description": "Collection of candidate applications."
+    },
+    "/machines/{machineId}": {
+      "schema": "Machine",
+      "description": "Collection of machines."
+    },
+    "/skills/{skillId}": {
+      "schema": "Skill",
+      "description": "Collection of skills."
+    },
+    "/factories/{factoryId}": {
+      "schema": "Factory",
+      "description": "Collection of factories."
+    }
+  }
+}

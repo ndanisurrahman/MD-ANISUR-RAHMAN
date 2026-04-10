@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      // For this demo, we assume any authenticated user is an admin
+      // In production, you'd check a 'role' field in a 'users' collection
+      return isAuthenticated();
+    }
+
+    // Jobs Collection
+    match /jobs/{jobId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Machines Collection
+    match /machines/{machineId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Skills Collection
+    match /skills/{skillId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Factories Collection
+    match /factories/{factoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Applications Collection
+    match /applications/{appId} {
+      allow create: if true; // Public can submit applications
+      allow read, update, delete: if isAdmin(); // Only admin can manage applications
+      
+      // Validation for creation
+      function isValidApplication() {
+        let data = request.resource.data;
+        return data.name is string && data.name.size() > 0 &&
+               data.mobile is string && data.mobile.size() == 11 &&
+               data.applicationId is string &&
+               data.status == 'Applied';
+      }
+      
+      allow create: if isValidApplication();
+    }
+  }
+}
