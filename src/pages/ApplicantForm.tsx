@@ -168,17 +168,18 @@ export default function ApplicantForm() {
       const appId = generateApplicationId(allApps.length);
       const position = jobs.find(j => j.id === formData.positionId);
       
-      const finalData = {
+      const finalData: any = {
         ...formData,
         applicationId: appId,
         positionName: position?.title || '',
-        assessmentScore: assessmentScore !== null ? assessmentScore : undefined,
-        assessmentQuestions: assessmentQuestions.length > 0 ? assessmentQuestions : undefined,
-        assessmentAnswers: assessmentAnswers.length > 0 ? assessmentAnswers : undefined,
-      } as Omit<Application, 'id' | 'createdAt'>;
+      };
 
-      const docRef = await applicationService.addApplication(finalData);
-      const savedApp = { id: docRef.id, ...finalData, createdAt: new Date().toISOString() } as Application;
+      if (assessmentScore !== null) finalData.assessmentScore = assessmentScore;
+      if (assessmentQuestions.length > 0) finalData.assessmentQuestions = assessmentQuestions;
+      if (assessmentAnswers.length > 0) finalData.assessmentAnswers = assessmentAnswers;
+
+      const docRef = await applicationService.addApplication(finalData as Omit<Application, 'id' | 'createdAt'>);
+      const savedApp = { id: docRef?.id, ...finalData, createdAt: new Date().toISOString() } as Application;
       
       setSuccess(savedApp);
       
