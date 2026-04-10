@@ -1,6 +1,18 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+let aiInstance: GoogleGenAI | null = null;
+
+function getAI() {
+  if (!aiInstance) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      console.warn("GEMINI_API_KEY is missing. AI features will use fallback questions.");
+      return null;
+    }
+    aiInstance = new GoogleGenAI({ apiKey });
+  }
+  return aiInstance;
+}
 
 export interface AssessmentQuestion {
   question: string;
@@ -10,6 +22,16 @@ export interface AssessmentQuestion {
 
 export const geminiService = {
   async generateAssessment(category: string, position: string, department: string = 'General'): Promise<AssessmentQuestion[]> {
+    const ai = getAI();
+    
+    if (!ai) {
+      return Array(10).fill(null).map((_, i) => ({
+        question: `Sample Question ${i + 1} for ${position} (Fallback) - নমুনা প্রশ্ন ${i + 1} (ফলব্যাক)`,
+        options: ["Option A - অপশন এ", "Option B - অপশন বি", "Option C - অপশন সি", "Option D - অপশন ডি"],
+        correctAnswer: "Option A - অপশন এ"
+      }));
+    }
+
     const prompt = `Generate 10 unique multiple-choice questions for a job applicant assessment.
     Category: ${category}
     Position: ${position}
